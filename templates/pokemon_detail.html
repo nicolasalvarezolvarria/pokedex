@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ poke_name.title() }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_detail.css') }}">
+</head>
+
+<body>
+    {% include "navbar.html" %}
+    
+    <div class="detail-container">
+        <div class="pokemon-card">
+            <div class="pokemon-header">
+                <h1>{{ poke_name.title() }}</h1>
+                <span class="pokemon-type">{{ poke_type }}</span>
+            </div>
+            
+            <div class="pokemon-image">
+                <img src="{{ image_url }}" alt="{{ poke_name }}">
+            </div>
+            
+            <div class="pokemon-info">
+                <div class="info-row">
+                    <div class="info-item">
+                        <span class="info-label">Altura</span>
+                        <span class="info-value">{{ poke_height }} m</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Peso</span>
+                        <span class="info-value">{{ poke_weight }} kg</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pokemon-section">
+                <h3>Habilidades</h3>
+                <div class="abilities-grid">
+                    {% for ab in abilities %}
+                    <span class="ability-badge">{{ ab }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="pokemon-section">
+                <h3>Estadísticas Base</h3>
+                <div class="stats-container">
+                    {% for stat, value in stats.items() %}
+                    <div class="stat-bar">
+                        <div class="stat-label">{{ stat.title() }}</div>
+                        <div class="stat-value-bar">
+                            <div class="stat-fill" style="width: {{ (value / 255 * 100) }}%">
+                                <span class="stat-value">{{ value }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="json-card">
+            <h3>Datos Completos de la API</h3>
+            <pre class="json-content"><code>{{ raw_json | tojson(indent=2) }}</code></pre>
+        </div>
+    </div>
+</body>
+
+</html>

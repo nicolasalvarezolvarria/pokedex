@@ -1,0 +1,240 @@
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+    margin: 0 0 32px 0;
+    font-size: 2.5em;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: fadeInDown 0.6s ease-out;
+}
+
+/* Pokemon Grid */
+.poke-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto 40px auto;
+    padding: 0 20px;
+}
+
+.poke-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.poke-card-link:hover {
+    transform: translateY(-8px);
+}
+
+.poke-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.poke-card-link:hover .poke-card {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.poke-card img {
+    width: 96px;
+    height: 96px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    transition: transform 0.3s ease;
+    margin-bottom: 12px;
+}
+
+.poke-card-link:hover .poke-card img {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.poke-card strong {
+    display: block;
+    color: #2c3e50;
+    font-size: 1.05em;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin: 32px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 16px;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    backdrop-filter: blur(5px);
+}
+
+.pagination a:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4);
+    border-color: white;
+}
+
+.pagination a:active {
+    transform: translateY(0);
+}
+
+.pagination .active {
+    background: white;
+    color: #667eea;
+    font-weight: bold;
+    border-color: white;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Add staggered animation delay for cards */
+.poke-card-link:nth-child(1) .poke-card { animation-delay: 0s; }
+.poke-card-link:nth-child(2) .poke-card { animation-delay: 0.05s; }
+.poke-card-link:nth-child(3) .poke-card { animation-delay: 0.1s; }
+.poke-card-link:nth-child(4) .poke-card { animation-delay: 0.15s; }
+.poke-card-link:nth-child(5) .poke-card { animation-delay: 0.2s; }
+.poke-card-link:nth-child(6) .poke-card { animation-delay: 0.25s; }
+.poke-card-link:nth-child(7) .poke-card { animation-delay: 0.3s; }
+.poke-card-link:nth-child(8) .poke-card { animation-delay: 0.35s; }
+.poke-card-link:nth-child(9) .poke-card { animation-delay: 0.4s; }
+.poke-card-link:nth-child(10) .poke-card { animation-delay: 0.45s; }
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .poke-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 24px;
+    }
+
+    .poke-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        padding: 0 10px;
+    }
+
+    .poke-card {
+        padding: 12px;
+    }
+
+    .poke-card img {
+        width: 72px;
+        height: 72px;
+    }
+
+    .poke-card strong {
+        font-size: 0.9em;
+    }
+
+    .pagination a,
+    .pagination span {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 12px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.6em;
+    }
+
+    .poke-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+    }
+
+    .poke-card {
+        padding: 10px;
+    }
+
+    .poke-card img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .poke-card strong {
+        font-size: 0.85em;
+    }
+
+    .pagination {
+        gap: 6px;
+    }
+
+    .pagination a,
+    .pagination span {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        font-size: 0.85em;
+    }
+}

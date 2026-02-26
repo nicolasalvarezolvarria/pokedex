@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pokédex | Lista de Pokemones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_list.css') }}">
+</head>
+
+<body>
+    {% include "navbar.html" %}
+    <h1>Pokédex: Pokemones</h1>
+    <div class="poke-grid">
+        {% for poke in pokemones[(page-1)*20 : page*20] %}
+        <a href="{{ url_for('pokemon', name=poke.name.lower()) }}" class="poke-card-link">
+            <div class="poke-card">
+                <img src="{{ poke.image }}" alt="{{ poke.name }}">
+                <div><strong>{{ poke.name }}</strong></div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('pokemon_list', page=page-1) }}">&#8592; Anterior</a>
+        {% endif %}
+        {# Muestra los primeros 5 números (ajusta si quieres mostrar más/menos #}
+        {% for p in range(1, last_page+1) %}
+        {% if p == page %}
+        <span class="active">{{ p }}</span>
+        {% elif p <= last_page %} <a href="{{ url_for('pokemon_list', page=p) }}">{{ p }}</a>
+            {% endif %}
+            {% endfor %}
+            {% if page < last_page %} <a href="{{ url_for('pokemon_list', page=page+1) }}">Siguiente &#8594;</a>
+                {% endif %}
+    </div>
+</body>
+
+</html>
