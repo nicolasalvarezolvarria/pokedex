@@ -111,7 +111,87 @@ def pokemon(name: str) -> str:
     except Exception as e:
         return f"Error al consultar la PokeAPI: {str(e)}"
 
+@app.route("/compare", methods=["GET", "POST"])
+def compare():
+    # Página de comparación de Pokémon
+    pokemon1 = None
+    pokemon2 = None
+    winner = None
+    error = None
+    
+    if request.method == "POST":
+        name1 = request.form.get("pokemon1")
+        name2 = request.form.get("pokemon2")
+        
+        if name1 and name2:
+            try:
+                # Obtener datos del primer Pokémon
+                url1 = f"https://pokeapi.co/api/v2/pokemon/{name1.lower()}"
+                response1 = requests.get(url1)
+                response1.raise_for_status()
+                data1 = response1.json()
+                
+                # Obtener datos del segundo Pokémon
+                url2 = f"https://pokeapi.co/api/v2/pokemon/{name2.lower()}"
+                response2 = requests.get(url2)
+                response2.raise_for_status()
+                data2 = response2.json()
+                
+                # Procesar datos del primer Pokémon
+                pokemon1 = {
+                    "name": data1['name'].title(),
+                    "type": ', '.join([t['type']['name'].title() for t in data1['types']]),
+                    "image": data1['sprites']['front_default'],
+                    "stats": {
+                        "hp": data1['stats'][0]['base_stat'],
+                        "attack": data1['stats'][1]['base_stat'],
+                        "defense": data1['stats'][2]['base_stat'],
+                        "special-attack": data1['stats'][3]['base_stat'],
+                        "special-defense": data1['stats'][4]['base_stat'],
+                        "speed": data1['stats'][5]['base_stat']
+                    }
+                }
+                pokemon1["total"] = sum(pokemon1["stats"].values())
+                
+                # Procesar datos del segundo Pokémon
+                pokemon2 = {
+                    "name": data2['name'].title(),
+                    "type": ', '.join([t['type']['name'].title() for t in data2['types']]),
+                    "image": data2['sprites']['front_default'],
+                    "stats": {
+                        "hp": data2['stats'][0]['base_stat'],
+                        "attack": data2['stats'][1]['base_stat'],
+                        "defense": data2['stats'][2]['base_stat'],
+                        "special-attack": data2['stats'][3]['base_stat'],
+                        "special-defense": data2['stats'][4]['base_stat'],
+                        "speed": data2['stats'][5]['base_stat']
+                    }
+                }
+                pokemon2["total"] = sum(pokemon2["stats"].values())
+                
+                # Determinar el ganador
+                if pokemon1["total"] > pokemon2["total"]:
+                    winner = "pokemon1"
+                elif pokemon2["total"] > pokemon1["total"]:
+                    winner = "pokemon2"
+                else:
+                    winner = "tie"
+                    
+            except requests.exceptions.HTTPError:
+                error = "No se pudo encontrar uno o ambos Pokémon. Verifica los nombres."
+            except Exception as e:
+                error = f"Error al consultar la PokeAPI: {str(e)}"
+    
+    return render_template('compare.html', 
+                         pokemon1=pokemon1, 
+                         pokemon2=pokemon2, 
+                         winner=winner, 
+                         error=error)
 
+@app.route("/runner")
+def runner():
+    # Página del juego Charmander Runner
+    return render_template('runner.html')
 
 if __name__ == "__main__":
     print("Iniciando Flask...") # Indicación en consola

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comparación de Pokémon - Batalla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/compare.css') }}">
+</head>
+
+<body>
+    {% include "navbar.html" %}
+
+    <div class="compare-container">
+        <div class="compare-header">
+            <h1>⚔️ Batalla Pokémon</h1>
+            <p class="subtitle">Compara dos Pokémon y descubre quién es el más fuerte</p>
+        </div>
+
+        <!-- Formulario de búsqueda -->
+        <form method="POST" class="search-form">
+            <div class="search-inputs">
+                <div class="input-group">
+                    <label for="pokemon1">Pokémon 1</label>
+                    <input 
+                        type="text" 
+                        id="pokemon1" 
+                        name="pokemon1" 
+                        placeholder="Ej: pikachu" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <div class="vs-divider">
+                    <span class="vs-text">VS</span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="pokemon2">Pokémon 2</label>
+                    <input 
+                        type="text" 
+                        id="pokemon2" 
+                        name="pokemon2" 
+                        placeholder="Ej: charizard" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-battle">¡Iniciar Batalla!</button>
+        </form>
+
+        <!-- Mensaje de error -->
+        {% if error %}
+        <div class="error-message">
+            <span class="error-icon">⚠️</span>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Arena de batalla -->
+        {% if pokemon1 and pokemon2 %}
+        <div class="battle-arena">
+            <!-- Pokémon 1 -->
+            <div class="pokemon-card {% if winner == 'pokemon1' %}winner{% elif winner == 'pokemon2' %}loser{% endif %}">
+                <div class="pokemon-sprite">
+                    <img src="{{ pokemon1.image }}" alt="{{ pokemon1.name }}" class="sprite-image">
+                    {% if winner == 'pokemon1' %}
+                    <div class="crown">👑</div>
+                    {% endif %}
+                </div>
+                <h2 class="pokemon-name">{{ pokemon1.name }}</h2>
+                <div class="pokemon-type">{{ pokemon1.type }}</div>
+                
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <span class="stat-label">HP</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-hp" style="width: {{ (pokemon1.stats.hp / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats.hp }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-attack" style="width: {{ (pokemon1.stats.attack / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats.attack }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-defense" style="width: {{ (pokemon1.stats.defense / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats.defense }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">At. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-sp-attack" style="width: {{ (pokemon1.stats['special-attack'] / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats['special-attack'] }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Def. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-sp-defense" style="width: {{ (pokemon1.stats['special-defense'] / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats['special-defense'] }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Velocidad</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-speed" style="width: {{ (pokemon1.stats.speed / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon1.stats.speed }}</span>
+                    </div>
+                    
+                    <div class="total-stats">
+                        <strong>Total:</strong> {{ pokemon1.total }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batalla VS -->
+            <div class="battle-vs">
+                <div class="vs-circle">
+                    <span class="vs-large">VS</span>
+                </div>
+                {% if winner == 'pokemon1' %}
+                <div class="battle-result">
+                    <div class="result-icon">🎯</div>
+                    <h3>¡{{ pokemon1.name }} Gana!</h3>
+                    <p class="result-detail">Total: {{ pokemon1.total }} vs {{ pokemon2.total }}</p>
+                </div>
+                {% elif winner == 'pokemon2' %}
+                <div class="battle-result">
+                    <div class="result-icon">🎯</div>
+                    <h3>¡{{ pokemon2.name }} Gana!</h3>
+                    <p class="result-detail">Total: {{ pokemon2.total }} vs {{ pokemon1.total }}</p>
+                </div>
+                {% else %}
+                <div class="battle-result">
+                    <div class="result-icon">🤝</div>
+                    <h3>¡Empate!</h3>
+                    <p class="result-detail">Ambos tienen {{ pokemon1.total }} puntos</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Pokémon 2 -->
+            <div class="pokemon-card {% if winner == 'pokemon2' %}winner{% elif winner == 'pokemon1' %}loser{% endif %}">
+                <div class="pokemon-sprite">
+                    <img src="{{ pokemon2.image }}" alt="{{ pokemon2.name }}" class="sprite-image">
+                    {% if winner == 'pokemon2' %}
+                    <div class="crown">👑</div>
+                    {% endif %}
+                </div>
+                <h2 class="pokemon-name">{{ pokemon2.name }}</h2>
+                <div class="pokemon-type">{{ pokemon2.type }}</div>
+                
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <span class="stat-label">HP</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-hp" style="width: {{ (pokemon2.stats.hp / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats.hp }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-attack" style="width: {{ (pokemon2.stats.attack / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats.attack }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-defense" style="width: {{ (pokemon2.stats.defense / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats.defense }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">At. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-sp-attack" style="width: {{ (pokemon2.stats['special-attack'] / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats['special-attack'] }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Def. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-sp-defense" style="width: {{ (pokemon2.stats['special-defense'] / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats['special-defense'] }}</span>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Velocidad</span>
+                        <div class="stat-bar-container">
+                            <div class="stat-bar stat-speed" style="width: {{ (pokemon2.stats.speed / 255) * 100 }}%"></div>
+                        </div>
+                        <span class="stat-value">{{ pokemon2.stats.speed }}</span>
+                    </div>
+                    
+                    <div class="total-stats">
+                        <strong>Total:</strong> {{ pokemon2.total }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
