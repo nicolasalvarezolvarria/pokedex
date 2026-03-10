@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Memoria Pokémon - Pokédex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/memory.css') }}">
+</head>
+
+<body>
+    {% include "navbar.html" %}
+
+    <div class="memory-wrapper">
+        <div class="memory-header">
+            <h1>🧠 Memoria Pokémon</h1>
+            <p class="memory-subtitle">¡Encuentra todos los pares de Pokémon!</p>
+        </div>
+
+        <div class="memory-stats">
+            <div class="stat-item">
+                <span class="stat-label">Movimientos</span>
+                <span class="stat-value" id="moves">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Pares encontrados</span>
+                <span class="stat-value" id="pairs">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Tiempo</span>
+                <span class="stat-value" id="timer">0s</span>
+            </div>
+        </div>
+
+        <div class="memory-controls">
+            <button class="btn-new-game" id="newGameBtn">🔄 Nueva Partida</button>
+            <select class="difficulty-select" id="difficultySelect">
+                <option value="8">Fácil (8 pares)</option>
+                <option value="12" selected>Normal (12 pares)</option>
+                <option value="18">Difícil (18 pares)</option>
+            </select>
+        </div>
+
+        <div class="memory-board" id="memoryBoard"></div>
+
+        <div class="win-overlay hidden" id="winOverlay">
+            <div class="win-content">
+                <div class="win-icon">🎉</div>
+                <h2>¡Ganaste!</h2>
+                <p>Completaste el juego en <strong id="finalMoves">0</strong> movimientos</p>
+                <p>Tiempo: <strong id="finalTime">0s</strong></p>
+                <button class="btn-new-game" id="playAgainBtn">¡Jugar de Nuevo!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/memory.js') }}"></script>
+</body>
+
+</html>

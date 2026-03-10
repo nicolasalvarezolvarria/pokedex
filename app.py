@@ -4,8 +4,8 @@ from flask import Flask, request, render_template, redirect, url_for # Para crea
 
 app = Flask(__name__) # Inicializa la aplicación Flask
 
-@app.route("/pokedex", methods=["GET", "POST"])
 @app.route("/", methods=["GET", "POST"])
+@app.route("/pokedex", methods=["GET", "POST"])
 def home():
     # Página principal de búsqueda de Pokémon
     pokemon_data = None
@@ -193,6 +193,11 @@ def compare():
 def runner():
     # Página del juego Charmander Runner
     return render_template('runner.html')
+
+@app.route("/memory")
+def memory():
+    # Página del juego de memoria Pokémon
+    return render_template('memory.html')
 
 if __name__ == "__main__":
     print("Iniciando Flask...") # Indicación en consola
