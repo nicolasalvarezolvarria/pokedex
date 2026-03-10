@@ -4,6 +4,7 @@ from flask import Flask, request, render_template, redirect, url_for # Para crea
 
 app = Flask(__name__) # Inicializa la aplicación Flask
 
+@app.route("/pokedex", methods=["GET", "POST"])
 @app.route("/", methods=["GET", "POST"])
 def home():
     # Página principal de búsqueda de Pokémon
