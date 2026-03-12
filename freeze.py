@@ -6,7 +6,7 @@ from app import app
 
 # ── Frozen-Flask configuration ────────────────────────────────────────────────
 app.config['FREEZER_DESTINATION'] = 'docs'
-app.config['FREEZER_BASE_URL'] = 'http://localhost/'
+app.config['FREEZER_BASE_URL'] = 'http://localhost:5000/'
 app.config['FREEZER_REMOVE_EXTRA_FILES'] = True
 app.config['FREEZER_IGNORE_MIMETYPE_WARNINGS'] = True
 

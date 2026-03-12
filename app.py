@@ -1,8 +1,22 @@
 import requests  # Para hacer solicitudes HTTP a la PokeAPI
 import re        # Para extraer el ID del Pokémon de la URL de la API
-from flask import Flask, render_template  # Para crear la aplicación web
+from flask import Flask, render_template, url_for as flask_url_for  # Para crear la aplicación web
+from urllib.parse import urljoin, urlparse
 
 app = Flask(__name__)  # Inicializa la aplicación Flask
+
+# Custom url_for that generates relative URLs for frozen-flask
+def url_for(endpoint, **values):
+    """Generate relative URLs for compatibility with GitHub Pages subdirectory deployment."""
+    absolute_url = flask_url_for(endpoint, **values)
+    # Convert absolute URL to relative path
+    # Remove leading slash to make it relative
+    if absolute_url.startswith('/'):
+        return '.' + absolute_url
+    return absolute_url
+
+# Make url_for available in templates
+app.jinja_env.globals['url_for'] = url_for
 
 # ──────────────────────────────────────────────
 # Rutas estáticas (compatibles con Frozen-Flask)
