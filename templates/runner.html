@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Charmander Runner - Pokédex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+
+<body>
+    {% include "navbar.html" %}
+
+    <div style="text-align:center; padding: 4rem 2rem;">
+        <h1>🔥 Charmander Runner</h1>
+        <p style="font-size:1.2rem; color: var(--text-secondary, #666); margin-top: 1rem;">
+            ¡Próximamente! El juego estará disponible en breve.
+        </p>
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+             alt="Charmander" style="width:120px; image-rendering:pixelated; margin-top:2rem;">
+    </div>
+</body>
+
+</html>

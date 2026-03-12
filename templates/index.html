@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -11,79 +11,115 @@
 
 <body>
     {% include "navbar.html" %}
-    
+
     <div class="search-container">
         <div class="search-card">
             <div class="search-header">
                 <img class="poke-ball"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokebola">
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+                    alt="Pokebola">
                 <h1>Pokédex</h1>
             </div>
-            
-            <form method="post" class="search-form">
-                <input type="text" name="name" placeholder="Nombre del Pokémon" required>
+
+            <form id="searchForm" class="search-form">
+                <input type="text" id="pokemonInput" placeholder="Nombre del Pokémon" required>
                 <button type="submit">🔍 Buscar</button>
             </form>
-            
-            {% if error %}
-            <div class="error">{{ error }}</div>
-            {% endif %}
+
+            <div id="errorMsg" class="error" style="display:none;"></div>
         </div>
 
-        {% if pokemon %}
-        <div class="result-container">
+        <div id="resultContainer" class="result-container" style="display:none;">
             <div class="pokemon-card">
                 <div class="pokemon-header">
-                    <h2>{{ pokemon.name }}</h2>
-                    <span class="pokemon-type">{{ pokemon.type }}</span>
+                    <h2 id="pokeName"></h2>
+                    <span id="pokeType" class="pokemon-type"></span>
                 </div>
-                
+
                 <div class="pokemon-image">
-                    <img src="{{ pokemon.image }}" alt="{{ pokemon.name }}">
+                    <img id="pokeImage" src="" alt="">
                 </div>
-                
+
                 <div class="pokemon-info">
                     <div class="info-row">
                         <div class="info-item">
                             <span class="info-label">Altura</span>
-                            <span class="info-value">{{ pokemon.height }} m</span>
+                            <span id="pokeHeight" class="info-value"></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Peso</span>
-                            <span class="info-value">{{ pokemon.weight }} kg</span>
+                            <span id="pokeWeight" class="info-value"></span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="pokemon-section">
                     <h3>Habilidades</h3>
-                    <div class="abilities-grid">
-                        {% for ab in pokemon.abilities %}
-                        <span class="ability-badge">{{ ab }}</span>
-                        {% endfor %}
-                    </div>
+                    <div id="pokeAbilities" class="abilities-grid"></div>
                 </div>
-                
+
                 <div class="pokemon-section">
                     <h3>Estadísticas Base</h3>
-                    <div class="stats-container">
-                        {% for stat, value in pokemon.stats.items() %}
-                        <div class="stat-bar">
-                            <span class="stat-label">{{ stat.replace('-', ' ').title() }}</span>
-                            <div class="stat-value-bar">
-                                <div class="stat-fill" style="width: {{ ((value / 255) * 100)|int }}%">
-
-                                    <span class="stat-value">{{ value }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
+                    <div id="pokeStats" class="stats-container"></div>
                 </div>
             </div>
         </div>
-        {% endif %}
     </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const name = document.getElementById('pokemonInput').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('errorMsg');
+            const resultContainer = document.getElementById('resultContainer');
+
+            errorMsg.style.display = 'none';
+            resultContainer.style.display = 'none';
+
+            if (!name) return;
+
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+                if (!res.ok) throw new Error('not found');
+                const data = await res.json();
+
+                document.getElementById('pokeName').textContent =
+                    data.name.charAt(0).toUpperCase() + data.name.slice(1);
+                document.getElementById('pokeType').textContent =
+                    data.types.map(t => t.type.name).join(', ');
+                const img = document.getElementById('pokeImage');
+                img.src = data.sprites.front_default;
+                img.alt = data.name;
+                document.getElementById('pokeHeight').textContent = (data.height / 10) + ' m';
+                document.getElementById('pokeWeight').textContent = (data.weight / 10) + ' kg';
+
+                const abilitiesEl = document.getElementById('pokeAbilities');
+                abilitiesEl.innerHTML = data.abilities
+                    .map(a => `<span class="ability-badge">${a.ability.name}</span>`)
+                    .join('');
+
+                const statsEl = document.getElementById('pokeStats');
+                statsEl.innerHTML = data.stats.map(s => {
+                    const pct = Math.round((s.base_stat / 255) * 100);
+                    const label = s.stat.name.replace(/-/g, ' ')
+                        .replace(/\b\w/g, c => c.toUpperCase());
+                    return `<div class="stat-bar">
+                        <span class="stat-label">${label}</span>
+                        <div class="stat-value-bar">
+                            <div class="stat-fill" style="width:${pct}%">
+                                <span class="stat-value">${s.base_stat}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                resultContainer.style.display = '';
+            } catch (err) {
+                errorMsg.textContent = `No se encontró información sobre el Pokémon '${name}'.`;
+                errorMsg.style.display = '';
+            }
+        });
+    </script>
 </body>
 
 </html>

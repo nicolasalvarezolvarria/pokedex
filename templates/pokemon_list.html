@@ -1,40 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <title>Pokédex | Lista de Pokemones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_list.css') }}">
 </head>
 
 <body>
     {% include "navbar.html" %}
+
     <h1>Pokédex: Pokemones</h1>
-    <div class="poke-grid">
-        {% for poke in pokemones[(page-1)*20 : page*20] %}
-        <a href="{{ url_for('pokemon', name=poke.name.lower()) }}" class="poke-card-link">
-            <div class="poke-card">
-                <img src="{{ poke.image }}" alt="{{ poke.name }}">
-                <div><strong>{{ poke.name }}</strong></div>
-            </div>
-        </a>
-        {% endfor %}
+
+    <div id="loadingMsg" style="text-align:center;padding:2rem;font-size:1.2rem;">
+        Cargando Pokémon...
     </div>
-    <div class="pagination">
-        {% if page > 1 %}
-        <a href="{{ url_for('pokemon_list', page=page-1) }}">&#8592; Anterior</a>
-        {% endif %}
-        {# Muestra los primeros 5 números (ajusta si quieres mostrar más/menos #}
-        {% for p in range(1, last_page+1) %}
-        {% if p == page %}
-        <span class="active">{{ p }}</span>
-        {% elif p <= last_page %} <a href="{{ url_for('pokemon_list', page=p) }}">{{ p }}</a>
-            {% endif %}
-            {% endfor %}
-            {% if page < last_page %} <a href="{{ url_for('pokemon_list', page=page+1) }}">Siguiente &#8594;</a>
-                {% endif %}
-    </div>
+    <div id="errorMsg" class="error" style="display:none;"></div>
+
+    <div id="pokeGrid" class="poke-grid"></div>
+
+    <div id="pagination" class="pagination" style="display:none;"></div>
+
+    <script>
+        const PER_PAGE = 20;
+        let allPokemon = [];
+        let currentPage = 1;
+
+        function cap(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function getPokeId(url) {
+            const m = url.match(/\/pokemon\/(\d+)\//);
+            return m ? m[1] : '';
+        }
+
+        function renderPage(page) {
+            currentPage = page;
+            const start = (page - 1) * PER_PAGE;
+            const slice = allPokemon.slice(start, start + PER_PAGE);
+            const grid = document.getElementById('pokeGrid');
+            grid.innerHTML = slice.map(p => {
+                const id = getPokeId(p.url);
+                const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+                const detailHref = `../pokemon/${p.name}/`;
+                return `<a href="${detailHref}" class="poke-card-link">
+                    <div class="poke-card">
+                        <img src="${img}" alt="${cap(p.name)}" loading="lazy">
+                        <div><strong>${cap(p.name)}</strong></div>
+                    </div>
+                </a>`;
+            }).join('');
+            renderPagination();
+            window.scrollTo(0, 0);
+        }
+
+        function renderPagination() {
+            const lastPage = Math.ceil(allPokemon.length / PER_PAGE);
+            const pag = document.getElementById('pagination');
+            let html = '';
+
+            if (currentPage > 1) {
+                html += `<a href="#" onclick="renderPage(${currentPage - 1});return false;">&#8592; Anterior</a>`;
+            }
+            for (let p = 1; p <= lastPage; p++) {
+                if (p === currentPage) {
+                    html += `<span class="active">${p}</span>`;
+                } else {
+                    html += `<a href="#" onclick="renderPage(${p});return false;">${p}</a>`;
+                }
+            }
+            if (currentPage < lastPage) {
+                html += `<a href="#" onclick="renderPage(${currentPage + 1});return false;">Siguiente &#8594;</a>`;
+            }
+            pag.innerHTML = html;
+            pag.style.display = '';
+        }
+
+        async function loadAll() {
+            try {
+                const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+                if (!res.ok) throw new Error('error');
+                const data = await res.json();
+                allPokemon = data.results;
+                document.getElementById('loadingMsg').style.display = 'none';
+                renderPage(1);
+            } catch (err) {
+                document.getElementById('loadingMsg').style.display = 'none';
+                document.getElementById('errorMsg').textContent = 'Error al cargar la lista de Pokémon.';
+                document.getElementById('errorMsg').style.display = '';
+            }
+        }
+
+        loadAll();
+    </script>
 </body>
 
 </html>
