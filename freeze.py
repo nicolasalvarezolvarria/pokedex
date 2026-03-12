@@ -29,6 +29,12 @@ def pokemon():
             yield {'name': str(i)}
 
 
+@freezer.register_generator
+def pokedex():
+    """Generate the /pokedex/ route for GitHub Pages compatibility."""
+    yield {}
+
+
 # ── Always run freeze when this script is executed ────────────────────────────
 print("Freezing Flask app to docs/ ...")
 sys.stdout.flush()

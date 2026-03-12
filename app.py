@@ -13,6 +13,11 @@ def home():
     # Página principal de búsqueda de Pokémon (client-side JS)
     return render_template('index.html')
 
+@app.route("/pokedex/")
+def pokedex():
+    # Página principal accesible en /pokedex para GitHub Pages
+    return render_template('index.html')
+
 @app.route("/about/")
 def about():
     # Página informativa sobre la Pokédex
