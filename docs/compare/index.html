@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Comparación de Pokémon - Batalla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/compare.css">
+</head>
+
+<body>
+    <nav class="navbar">
+    <div class="nav-content">
+        <!-- Logo Pokebola -->
+        <a href="/" class="nav-logo" title="Pokédex Home">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
+                 alt="Pokeball" 
+                 class="nav-pokeball">
+        </a>
+        <a class="nav-link" href="/">Buscar Pokémon</a>
+        <a class="nav-link" href="/pokemones/">Lista Pokemones</a>
+        <a class="nav-link" href="/compare/">Batalla Pokémon</a>
+        <a class="nav-link" href="/memory/">Memoria Pokémon</a>
+        <a class="nav-link" href="/runner/">Charmander Runner</a>
+        <a class="nav-link" href="/about/">Sobre la Pokédex</a>
+    </div>
+</nav>
+
+    <div class="compare-container">
+        <div class="compare-header">
+            <h1>⚔️ Batalla Pokémon</h1>
+            <p class="subtitle">Compara dos Pokémon y descubre quién es el más fuerte</p>
+        </div>
+
+        <!-- Formulario de búsqueda -->
+        <form id="battleForm" class="search-form">
+            <div class="search-inputs">
+                <div class="input-group">
+                    <label for="pokemon1">Pokémon 1</label>
+                    <input type="text" id="pokemon1" placeholder="Ej: pikachu" required autocomplete="off">
+                </div>
+
+                <div class="vs-divider">
+                    <span class="vs-text">VS</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="pokemon2">Pokémon 2</label>
+                    <input type="text" id="pokemon2" placeholder="Ej: charizard" required autocomplete="off">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-battle">¡Iniciar Batalla!</button>
+        </form>
+
+        <!-- Mensaje de error -->
+        <div id="errorMessage" class="error-message" style="display:none;">
+            <span class="error-icon">⚠️</span>
+            <span id="errorText"></span>
+        </div>
+
+        <!-- Arena de batalla -->
+        <div id="battleArena" class="battle-arena" style="display:none;">
+            <!-- Pokémon 1 -->
+            <div id="card1" class="pokemon-card">
+                <div class="pokemon-sprite">
+                    <img id="img1" src="" alt="" class="sprite-image">
+                    <div id="crown1" class="crown" style="display:none;">👑</div>
+                </div>
+                <h2 id="name1" class="pokemon-name"></h2>
+                <div id="type1" class="pokemon-type"></div>
+
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <span class="stat-label">HP</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1hp" class="stat-bar stat-hp"></div>
+                        </div>
+                        <span id="val1hp" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1atk" class="stat-bar stat-attack"></div>
+                        </div>
+                        <span id="val1atk" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1def" class="stat-bar stat-defense"></div>
+                        </div>
+                        <span id="val1def" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">At. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1spa" class="stat-bar stat-sp-attack"></div>
+                        </div>
+                        <span id="val1spa" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Def. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1spd" class="stat-bar stat-sp-defense"></div>
+                        </div>
+                        <span id="val1spd" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Velocidad</span>
+                        <div class="stat-bar-container">
+                            <div id="bar1spe" class="stat-bar stat-speed"></div>
+                        </div>
+                        <span id="val1spe" class="stat-value"></span>
+                    </div>
+                    <div class="total-stats">
+                        <strong>Total:</strong> <span id="total1"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batalla VS -->
+            <div class="battle-vs">
+                <div class="vs-circle">
+                    <span class="vs-large">VS</span>
+                </div>
+                <div id="battleResult" class="battle-result"></div>
+            </div>
+
+            <!-- Pokémon 2 -->
+            <div id="card2" class="pokemon-card">
+                <div class="pokemon-sprite">
+                    <img id="img2" src="" alt="" class="sprite-image">
+                    <div id="crown2" class="crown" style="display:none;">👑</div>
+                </div>
+                <h2 id="name2" class="pokemon-name"></h2>
+                <div id="type2" class="pokemon-type"></div>
+
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <span class="stat-label">HP</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2hp" class="stat-bar stat-hp"></div>
+                        </div>
+                        <span id="val2hp" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Ataque</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2atk" class="stat-bar stat-attack"></div>
+                        </div>
+                        <span id="val2atk" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Defensa</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2def" class="stat-bar stat-defense"></div>
+                        </div>
+                        <span id="val2def" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">At. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2spa" class="stat-bar stat-sp-attack"></div>
+                        </div>
+                        <span id="val2spa" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Def. Esp.</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2spd" class="stat-bar stat-sp-defense"></div>
+                        </div>
+                        <span id="val2spd" class="stat-value"></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Velocidad</span>
+                        <div class="stat-bar-container">
+                            <div id="bar2spe" class="stat-bar stat-speed"></div>
+                        </div>
+                        <span id="val2spe" class="stat-value"></span>
+                    </div>
+                    <div class="total-stats">
+                        <strong>Total:</strong> <span id="total2"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function cap(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function fillCard(n, data) {
+            const stats = {
+                hp: data.stats[0].base_stat,
+                attack: data.stats[1].base_stat,
+                defense: data.stats[2].base_stat,
+                spa: data.stats[3].base_stat,
+                spd: data.stats[4].base_stat,
+                speed: data.stats[5].base_stat
+            };
+            const total = Object.values(stats).reduce((a, b) => a + b, 0);
+
+            document.getElementById(`img${n}`).src = data.sprites.front_default;
+            document.getElementById(`img${n}`).alt = data.name;
+            document.getElementById(`name${n}`).textContent = cap(data.name);
+            document.getElementById(`type${n}`).textContent =
+                data.types.map(t => cap(t.type.name)).join(', ');
+
+            const keys = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+            const vals = [stats.hp, stats.attack, stats.defense, stats.spa, stats.spd, stats.speed];
+            keys.forEach((k, i) => {
+                document.getElementById(`bar${n}${k}`).style.width = Math.round((vals[i] / 255) * 100) + '%';
+                document.getElementById(`val${n}${k}`).textContent = vals[i];
+            });
+
+            document.getElementById(`total${n}`).textContent = total;
+            return { name: cap(data.name), total };
+        }
+
+        document.getElementById('battleForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const n1 = document.getElementById('pokemon1').value.trim().toLowerCase();
+            const n2 = document.getElementById('pokemon2').value.trim().toLowerCase();
+            const errDiv = document.getElementById('errorMessage');
+            const arena = document.getElementById('battleArena');
+
+            errDiv.style.display = 'none';
+            arena.style.display = 'none';
+
+            try {
+                const [r1, r2] = await Promise.all([
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${n1}`),
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${n2}`)
+                ]);
+                if (!r1.ok || !r2.ok) throw new Error('not found');
+                const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+
+                const p1 = fillCard(1, d1);
+                const p2 = fillCard(2, d2);
+
+                // Reset card classes
+                document.getElementById('card1').className = 'pokemon-card';
+                document.getElementById('card2').className = 'pokemon-card';
+                document.getElementById('crown1').style.display = 'none';
+                document.getElementById('crown2').style.display = 'none';
+
+                let resultHTML = '';
+                if (p1.total > p2.total) {
+                    document.getElementById('card1').classList.add('winner');
+                    document.getElementById('card2').classList.add('loser');
+                    document.getElementById('crown1').style.display = '';
+                    resultHTML = `<div class="result-icon">🎯</div>
+                        <h3>¡${p1.name} Gana!</h3>
+                        <p class="result-detail">Total: ${p1.total} vs ${p2.total}</p>`;
+                } else if (p2.total > p1.total) {
+                    document.getElementById('card2').classList.add('winner');
+                    document.getElementById('card1').classList.add('loser');
+                    document.getElementById('crown2').style.display = '';
+                    resultHTML = `<div class="result-icon">🎯</div>
+                        <h3>¡${p2.name} Gana!</h3>
+                        <p class="result-detail">Total: ${p2.total} vs ${p1.total}</p>`;
+                } else {
+                    resultHTML = `<div class="result-icon">🤝</div>
+                        <h3>¡Empate!</h3>
+                        <p class="result-detail">Ambos tienen ${p1.total} puntos</p>`;
+                }
+                document.getElementById('battleResult').innerHTML = resultHTML;
+                arena.style.display = '';
+            } catch (err) {
+                document.getElementById('errorText').textContent =
+                    'No se pudo encontrar uno o ambos Pokémon. Verifica los nombres.';
+                errDiv.style.display = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

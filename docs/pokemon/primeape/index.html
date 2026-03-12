@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title id="pageTitle">Pokémon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/pokemon_detail.css">
+</head>
+
+<body>
+    <nav class="navbar">
+    <div class="nav-content">
+        <!-- Logo Pokebola -->
+        <a href="/" class="nav-logo" title="Pokédex Home">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
+                 alt="Pokeball" 
+                 class="nav-pokeball">
+        </a>
+        <a class="nav-link" href="/">Buscar Pokémon</a>
+        <a class="nav-link" href="/pokemones/">Lista Pokemones</a>
+        <a class="nav-link" href="/compare/">Batalla Pokémon</a>
+        <a class="nav-link" href="/memory/">Memoria Pokémon</a>
+        <a class="nav-link" href="/runner/">Charmander Runner</a>
+        <a class="nav-link" href="/about/">Sobre la Pokédex</a>
+    </div>
+</nav>
+
+    <div class="detail-container" id="detailContainer">
+        <div id="loadingMsg" style="text-align:center;padding:2rem;font-size:1.2rem;">
+            Cargando datos de primeape...
+        </div>
+        <div id="errorMsg" class="error" style="display:none;"></div>
+
+        <div id="pokemonCard" class="pokemon-card" style="display:none;">
+            <div class="pokemon-header">
+                <h1 id="pokeName"></h1>
+                <span id="pokeType" class="pokemon-type"></span>
+            </div>
+
+            <div class="pokemon-image">
+                <img id="pokeImage" src="" alt="">
+            </div>
+
+            <div class="pokemon-info">
+                <div class="info-row">
+                    <div class="info-item">
+                        <span class="info-label">Altura</span>
+                        <span id="pokeHeight" class="info-value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Peso</span>
+                        <span id="pokeWeight" class="info-value"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pokemon-section">
+                <h3>Habilidades</h3>
+                <div id="pokeAbilities" class="abilities-grid"></div>
+            </div>
+
+            <div class="pokemon-section">
+                <h3>Estadísticas Base</h3>
+                <div id="pokeStats" class="stats-container"></div>
+            </div>
+        </div>
+
+        <div id="jsonCard" class="json-card" style="display:none;">
+            <h3>Datos Completos de la API</h3>
+            <pre class="json-content"><code id="rawJson"></code></pre>
+        </div>
+    </div>
+
+    <script>
+        const pokeName = "primeape";
+
+        async function loadPokemon() {
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName.toLowerCase()}`);
+                if (!res.ok) throw new Error('not found');
+                const data = await res.json();
+
+                document.getElementById('loadingMsg').style.display = 'none';
+
+                const name = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+                document.title = name;
+                document.getElementById('pageTitle').textContent = name;
+                document.getElementById('pokeName').textContent = name;
+                document.getElementById('pokeType').textContent =
+                    data.types.map(t => t.type.name).join(', ');
+
+                const img = document.getElementById('pokeImage');
+                img.src = data.sprites.front_default;
+                img.alt = data.name;
+
+                document.getElementById('pokeHeight').textContent = (data.height / 10) + ' m';
+                document.getElementById('pokeWeight').textContent = (data.weight / 10) + ' kg';
+
+                document.getElementById('pokeAbilities').innerHTML =
+                    data.abilities.map(a => `<span class="ability-badge">${a.ability.name}</span>`).join('');
+
+                document.getElementById('pokeStats').innerHTML = data.stats.map(s => {
+                    const pct = Math.round((s.base_stat / 255) * 100);
+                    const label = s.stat.name.charAt(0).toUpperCase() + s.stat.name.slice(1);
+                    return `<div class="stat-bar">
+                        <div class="stat-label">${label}</div>
+                        <div class="stat-value-bar">
+                            <div class="stat-fill" style="width:${pct}%">
+                                <span class="stat-value">${s.base_stat}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                document.getElementById('rawJson').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('pokemonCard').style.display = '';
+                document.getElementById('jsonCard').style.display = '';
+            } catch (err) {
+                document.getElementById('loadingMsg').style.display = 'none';
+                document.getElementById('errorMsg').textContent =
+                    `No se encontró información sobre el Pokémon '${pokeName}'.`;
+                document.getElementById('errorMsg').style.display = '';
+            }
+        }
+
+        loadPokemon();
+    </script>
+</body>
+
+</html>
